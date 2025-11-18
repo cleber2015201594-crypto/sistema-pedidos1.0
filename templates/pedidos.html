@@ -1,1 +1,109 @@
+{% extends "base.html" %}
 
+{% block title %}Pedidos{% endblock %}
+
+{% block content %}
+<h1>📋 Gestão de Pedidos</h1>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Novo Pedido</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_pedido') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Número do Pedido</label>
+                        <input type="text" class="form-control" name="numero_pedido" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data do Pedido</label>
+                        <input type="date" class="form-control" name="data_pedido" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Produto</label>
+                        <select class="form-select" name="id_produto" required>
+                            <option value="">Selecione um produto</option>
+                            {% for produto in produtos %}
+                            <option value="{{ produto.id_produto }}" data-nome="{{ produto.nome_produto }}">
+                                {{ produto.nome_produto }} (Estoque: {{ produto.quantidade }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" name="nome_produto" id="nome_produto">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" class="form-control" name="quantidade" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        <input type="text" class="form-control" name="cliente" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observações</label>
+                        <textarea class="form-control" name="observacoes"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Criar Pedido</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Pedidos</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nº Pedido</th>
+                            <th>Data</th>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Cliente</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                        <tr>
+                            <td>{{ pedido.numero_pedido }}</td>
+                            <td>{{ pedido.data_pedido }}</td>
+                            <td>{{ pedido.nome_produto }}</td>
+                            <td>{{ pedido.quantidade }}</td>
+                            <td>{{ pedido.cliente }}</td>
+                            <td>
+                                {% if pedido.status == 'Pendente' %}
+                                <span class="badge bg-warning">Pendente</span>
+                                {% else %}
+                                <span class="badge bg-success">Produzido</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pedido.status == 'Pendente' %}
+                                <form method="POST" action="{{ url_for('update_status_pedido', pedido_id=pedido.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-success">Marcar como Produzido</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Preenche o campo hidden do nome do produto quando selecionado
+    document.querySelector('select[name="id_produto"]').addEventListener('change', function() {
+        var selectedOption = this.options[this.selectedIndex];
+        document.getElementById('nome_produto').value = selectedOption.textContent.split(' (')[0];
+    });
+</script>
+{% endblock %}
