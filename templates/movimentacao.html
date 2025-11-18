@@ -1,1 +1,47 @@
+{% extends "base.html" %}
 
+{% block title %}Movimentação{% endblock %}
+
+{% block content %}
+<h1>📈 Movimentação de Estoque</h1>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5>Histórico de Movimentações</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Origem/Destino</th>
+                    <th>Documento</th>
+                    <th>Saldo Atual</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mov in movimentacoes %}
+                <tr>
+                    <td>{{ mov.data_movimentacao }}</td>
+                    <td>
+                        {% if mov.tipo == 'Entrada' %}
+                        <span class="badge bg-success">Entrada</span>
+                        {% else %}
+                        <span class="badge bg-danger">Saída</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ mov.nome_produto }}</td>
+                    <td>{{ mov.quantidade }}</td>
+                    <td>{{ mov.origem_destino }}</td>
+                    <td>{{ mov.numero_documento }}</td>
+                    <td>{{ mov.saldo_atual }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
